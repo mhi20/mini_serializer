@@ -12,19 +12,19 @@ module MiniSerializer
       @wams_except_params_main_object=except_params[:except]
     end
 
-    def self.add_has_many(object,except_methods=[])
+    def add_has_many(object,except_methods=[])
       wams_has_many.append [object,except_methods]
     end
 
-    def self.add_has_one(object,except_methods=[])
+    def add_has_one(object,except_methods=[])
       wams_has_one<<[object,except_methods]
     end
 
-    def self.get_included_objects
+    def get_included_objects
       return wams_association_object
     end
 
-    def self.json_serializer
+    def json_serializer
       included_data=includes_to_serlizer
       var_hash={}
 
@@ -48,7 +48,7 @@ module MiniSerializer
                   :wams_except_params,:wams_main_object,:wams_association_for_to_json,
                   :wams_except_params_main_object
 
-    def self.includes_to_serlizer
+    def includes_to_serlizer
       data_with_includes=nil
       fetch_association_objects
       if wams_has_many.any?
@@ -60,7 +60,7 @@ module MiniSerializer
       return data_with_includes
     end
 
-    def self.fetch_association_objects
+    def fetch_association_objects
       wams_has_many.map do  |object_asoc,except_params|
         wams_association_for_to_json.store(object_asoc,{except: except_params}) # for to_json hash
         wams_association_object<<object_asoc # for included (relation record)
