@@ -21,8 +21,18 @@ Or install it yourself as:
     $ gem install mini_serilizer
 
 ## Usage
+### Initialize 
+* MiniSerilizer::Serilizer.new(Object,Except params)
+  * serilizer=MiniSerilizer::Serilizer.new(House.all,{except:[:id,:description]})
+### Assosiation
+* serilizer.add_has_many(String object,Except params)
+  * Example: serilizer.add_has_many('house_images',['id','house_id','created_at','updated_at'])
+    
+* serilizer.add_has_one(String object,Except params)
+  * Example: serilizer.add_has_one('house_type',['id'])
 
-TODO: Write usage instructions here
+### Export Serializer
+    render json:serilizer.json_serializer
 
 ## Development
 
