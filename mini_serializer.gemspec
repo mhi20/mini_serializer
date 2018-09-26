@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["mahdi alizadeh"]
   spec.email         = ["mahdializadeh20@gmail.com"]
 
-  spec.summary       = %q{Serialize object for export json_api}
-  spec.description   = %q{Serialize object for export json api}
+  spec.summary       = %q{Serializes Activemodel object to JSON API format}
+  spec.description   = %q{Serializes Activemodel object to JSON API format}
   spec.homepage      = "https://github.com/mhi20/mini_serializer"
   spec.license       = "MIT"
 
