@@ -20,12 +20,17 @@ module MiniSerializer
       wams_has_one<<[object,except_methods]
     end
 
-    def get_included_objects
-      return wams_association_object
+    def get_params_included_to_json(with_except:false)
+      fetch_association_objects
+      if with_except
+        {include:wams_association_for_to_json,except:wams_except_params_main_object}
+      else
+        {include:wams_association_for_to_json}
+      end
     end
 
-    def json_serializer
-      included_data=includes_to_serlizer
+    def json_serializer(object=nil)
+      included_data=includes_to_serializer
       var_hash={}
 
       wams_has_many.map do |object_assosiation,except_params|
@@ -36,11 +41,23 @@ module MiniSerializer
       end
 
       if wams_except_params_main_object.any? # have except params for main object
-        return included_data.to_json({include:wams_association_for_to_json,except:wams_except_params_main_object})
+        unless object.nil?
+            object.to_json({include:wams_association_for_to_json,except:wams_except_params_main_object})
+          else
+            included_data.to_json({include:wams_association_for_to_json,except:wams_except_params_main_object})
+        end
       else
-        return included_data.to_json({include:wams_association_for_to_json})
+        unless object.nil?
+            return object.to_json({include:wams_association_for_to_json})
+          else
+            return included_data.to_json({include:wams_association_for_to_json})
+        end
       end
       # example output : wams_association_for_to_json is {'house_images':{except: [:id,:house_id]} }
+    end
+
+    def get_object_included
+      return includes_to_serializer
     end
 
     private
@@ -48,7 +65,7 @@ module MiniSerializer
                   :wams_except_params,:wams_main_object,:wams_association_for_to_json,
                   :wams_except_params_main_object
 
-    def includes_to_serlizer
+    def includes_to_serializer
       data_with_includes=nil
       fetch_association_objects
       if wams_has_many.any?
