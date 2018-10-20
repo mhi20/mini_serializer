@@ -9,7 +9,12 @@ module MiniSerializer
       @wams_association_object=[]
       @wams_association_for_to_json={}
       @wams_main_object=object_main
-      @wams_except_params_main_object=except_params[:except]
+      if !except_params.empty?
+        @wams_except_params_main_object=except_params[:except]
+      else
+        @wams_except_params_main_object={}
+      end
+
     end
 
     def add_has_many(object,except_methods=[])
@@ -40,7 +45,7 @@ module MiniSerializer
         var_hash.store(object_assosiation,{except: except_params})
       end
 
-      if wams_except_params_main_object.any? # have except params for main object
+      if !wams_except_params_main_object.empty? # have except params for main object
         unless object.nil?
             object.to_json({include:wams_association_for_to_json,except:wams_except_params_main_object})
           else
