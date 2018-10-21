@@ -79,6 +79,9 @@ module MiniSerializer
       if wams_has_one.any?
         data_with_includes.merge! wams_main_object.includes(wams_association_object)
       end
+      if wams_has_one.empty? && wams_has_one.empty? # when main object not any has_one and has_many
+        return wams_main_object # return main object
+      end
       return data_with_includes
     end
 
