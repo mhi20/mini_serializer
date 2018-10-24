@@ -35,12 +35,23 @@ module MiniSerializer
       end
     end
 
-    def add_foreign_object(objects,custom_name,except_params=[]) # ezafe kardane object khareji be object asli
+    def add_foreign_object(objects,custom_name,include_params,except_params=[]) # ezafe kardane object khareji be object asli
+
+      if include_params.any?
+        if include_params.kind_of?(Hash)
+          param_for_include=include_params.keys
+        elsif (include_params.kind_of?(Array))
+
+          param_for_include=include_params
+        end
+        puts param_for_include
+        objects=objects.includes(param_for_include)
+      end
 
       if except_params.empty?
         wams_foreign_object[custom_name]=objects
       else
-        wams_foreign_object[custom_name]=objects.as_json(except:except_params)
+        wams_foreign_object[custom_name]=objects.as_json(except:except_params,include:include_params)
       end
 
     end
@@ -67,7 +78,7 @@ module MiniSerializer
         end
       end
       if wams_foreign_object.any? # when use method foreign_object
-        if wams_main_object.kind_of? Class
+        if wams_main_object.kind_of?(Class)
           name_main_object=wams_main_object.to_s.downcase.pluralize
         else
           name_main_object=wams_main_object.klass.name.downcase.pluralize
