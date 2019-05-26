@@ -26,6 +26,7 @@ Or install it yourself as:
  serializer=MiniSerializer::Serializer.new(House.all,{except:[:id,:title]})
 ### Associations
    serializer.add_has_many('house_images',['id','house_id','created_at','updated_at'])
+   
    serializer.add_has_one('house_type',['id'])
 ### Parse data with json_serializer    
     render json:serializer.json_serializer
