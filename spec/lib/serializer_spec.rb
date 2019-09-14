@@ -38,6 +38,118 @@ describe MiniSerializer::Serializer do
         end
       end
     end
-    # describe 'Get params included' do end
+
+    describe '#get_params_included_to_json' do
+      before :each do
+        @object_serializer = described_class.new([{ simple_field: 'TEXT' }])
+      end
+      context 'Format' do
+        before :each do
+          @object_serializer.add_has_one 'product'
+          @object_serializer.add_has_many 'categories'
+        end
+
+        it 'Not empty response' do
+          expect(@object_serializer
+            .get_params_included_to_json.empty?)
+            .not_to be_truthy
+        end
+        it 'Get Hash response get_params_included_to_json method' do
+          expect(@object_serializer
+            .get_params_included_to_json.class)
+            .to be == Hash
+        end
+
+        it 'Get Hash include:categories response data' do
+          expect(@object_serializer
+            .get_params_included_to_json[:include]['categories'].class)
+            .to be == Hash
+        end
+
+        it 'Get Hash include:categories:except response data' do
+          expect(@object_serializer
+            .get_params_included_to_json[:include]['categories'][:except].class)
+            .to be == Array
+        end
+
+        it 'Get Hash include:product response data' do
+          expect(@object_serializer
+            .get_params_included_to_json[:include]['product'].class)
+            .to be == Hash
+        end
+
+        it 'Get Hash include:product:except response data' do
+          expect(@object_serializer
+            .get_params_included_to_json[:include]['product'][:except].class)
+            .to be == Array
+        end
+
+        it 'Inlcude param must be symbol' do
+          expect(@object_serializer
+            .get_params_included_to_json
+            .keys
+            .first
+            .class)
+            .to be == Symbol
+        end
+
+        it 'Categories param must be string' do
+          expect(@object_serializer
+            .get_params_included_to_json[:include]
+            .keys[0]
+            .class)
+            .to be == String
+        end
+
+        it 'Product param must be string' do
+          expect(@object_serializer
+            .get_params_included_to_json[:include]
+            .keys[1]
+            .class)
+            .to be == String
+        end
+
+        it 'Product param with_except argument must be Hash' do
+          expect(@object_serializer
+            .get_params_included_to_json(with_except: true)[:except]
+            .class)
+            .to be == Hash
+        end
+      end
+
+      context 'Response data' do
+        it 'One product and many categories' do
+          @object_serializer.add_has_one 'product'
+          @object_serializer.add_has_many 'categories'
+          expect(@object_serializer.get_params_included_to_json)
+            .to match include: { 'categories' => { except: [] }, 'product' =>
+                                                                  { except: [] }}
+        end
+
+        it 'One product & many categories & many staffs' do
+          @object_serializer.add_has_one 'product'
+          @object_serializer.add_has_many 'categories'
+          @object_serializer.add_has_many 'staffs'
+          expect(@object_serializer.get_params_included_to_json)
+            .to match include: { 'categories' => { except: [] },
+                                 'staffs' => { except: [] },
+                                 'product' => { except: [] } }
+        end
+
+        it 'With except argument' do
+          @object_serializer = described_class.new([{ simple_field: 'TEXT' }],
+                                                   except: [:name])
+          @object_serializer.add_has_one 'product'
+          @object_serializer.add_has_many 'categories'
+          @object_serializer.add_has_many 'staffs'
+
+          expect(@object_serializer.get_params_included_to_json(with_except: [:name]))
+            .to match include: { 'categories' => { except: [] },
+                                 'staffs' => { except: [] },
+                                 'product' => { except: [] } },
+                      except: [:name]
+        end
+      end
+    end
   end
 end
