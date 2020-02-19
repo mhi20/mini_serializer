@@ -6,7 +6,7 @@ describe MiniSerializer::Serializer do
   describe '#initialize' do
     describe 'Association methods' do
       before :each do
-        @object_serializer = described_class.new([{ simple_field: 'TEXT' }])
+        @object_serializer = described_class.new(House.all)
       end
       describe '#add_has_many' do
         context 'Create some object as add_has_many' do
@@ -41,7 +41,7 @@ describe MiniSerializer::Serializer do
 
     describe '#get_params_included_to_json' do
       before :each do
-        @object_serializer = described_class.new([{ simple_field: 'TEXT' }])
+        @object_serializer = described_class.new(House.all)
       end
       context 'Format' do
         before :each do
@@ -84,7 +84,7 @@ describe MiniSerializer::Serializer do
             .to be == Array
         end
 
-        it 'Inlcude param must be symbol' do
+        it 'Include param must be symbol' do
           expect(@object_serializer
             .get_params_included_to_json
             .keys
@@ -137,7 +137,7 @@ describe MiniSerializer::Serializer do
         end
 
         it 'With except argument' do
-          @object_serializer = described_class.new([{ simple_field: 'TEXT' }],
+          @object_serializer = described_class.new(House.all,
                                                    except: [:name])
           @object_serializer.add_has_one 'product'
           @object_serializer.add_has_many 'categories'
@@ -149,7 +149,39 @@ describe MiniSerializer::Serializer do
                                  'product' => { except: [] } },
                       except: [:name]
         end
+
+        context '#json_serializer' do
+          before :each do
+            @object_serializer = described_class.new(House.all,
+                                                     except: [:name])
+            @object_serializer.add_has_one 'product'
+            @object_serializer.add_has_many 'categories'
+            @object_serializer.add_has_many 'staffs'
+          end
+
+          it 'check hash type' do
+            expect(@object_serializer.json_serializer.class).to eq Hash
+          end
+
+          it 'check return data' do
+            expect(@object_serializer.json_serializer).to match('simple_field' =>'TEXT')
+          end
+
+        end
+
       end
     end
+  end
+end
+
+class House
+  def self.all
+    FakeRecords
+  end
+end
+
+class FakeRecords
+  def self.includes(_)
+    { simple_field: 'TEXT' }
   end
 end
