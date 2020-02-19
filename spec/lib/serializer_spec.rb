@@ -163,8 +163,21 @@ describe MiniSerializer::Serializer do
             expect(@object_serializer.json_serializer.class).to eq Hash
           end
 
+          it 'check return data string' do
+            expect(@object_serializer.json_serializer).to match('simple_field' => 'TEXT')
+          end
+        end
+
+        context '#get_object_included' do
+          before :each do
+            @object_serializer = described_class.new(House.all,
+                                                     except: [:name])
+            @object_serializer.add_has_one 'product'
+            @object_serializer.add_has_many 'categories'
+          end
+
           it 'check return data' do
-            expect(@object_serializer.json_serializer).to match('simple_field' =>'TEXT')
+            expect(@object_serializer.get_object_included).to match(simple_field: 'TEXT')
           end
 
         end
