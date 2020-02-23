@@ -1,7 +1,15 @@
-class House
-  def self.all
+module Methods
+  def all
     FakeRecords
   end
+end
+
+class House
+  extend Methods
+end
+
+class ForeignHouse
+  extend Methods
 end
 
 class FakeRecords
