@@ -112,6 +112,25 @@ describe MiniSerializer::Serializer do
                       except: [:name]
       end
 
+      context '#add_foreign_object' do
+        before :each do
+          @object_serializer = described_class.new(House.all,
+                                                   except: [:name])
+          @object_serializer.add_has_one 'product'
+          @object_serializer.add_has_many 'categories'
+        end
+
+        it 'response data' do
+          object = @object_serializer.add_foreign_object(ForeignHouse.all, :custom_name, [:simple_field])
+          expect(object).to match simple_field: 'TEXT'
+        end
+
+        it 'response json_serializer data' do
+          @object_serializer.add_foreign_object(ForeignHouse.all, :custom_name, { custom_obj: 'simple_field' })
+          expect(@object_serializer.json_serializer[:included].any?).to be_truthy
+        end
+      end
+
       context '#json_serializer' do
         before :each do
           @object_serializer = described_class.new(House.all,
